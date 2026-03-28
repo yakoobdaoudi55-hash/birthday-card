@@ -1,0 +1,610 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>HBD love</title>	    
+    <link type="text/css" rel="stylesheet" href="file/default.css">
+    <script type="text/javascript" src="file/jquery.min.js"></script>
+    <script type="text/javascript" src="file/jscex.min.js"></script>
+    <script type="text/javascript" src="file/jscex-parser.js"></script>
+    <script type="text/javascript" src="file/jscex-jit.js"></script>
+    <script type="text/javascript" src="file/jscex-builderbase.min.js"></script>
+    <script type="text/javascript" src="file/jscex-async.min.js"></script>
+    <script type="text/javascript" src="file/jscex-async-powerpack.min.js"></script>
+    <script type="text/javascript" src="file/function.js" charset="utf-8"></script>
+    <script type="text/javascript" src="file/love.js" charset="utf-8"></script>
+    <script>
+        function playAudio() {
+            var audio = document.getElementById("myAudio");
+            audio.play();
+        }
+    </script>
+    <style>
+        /* ── Gallery Hint — fixed floating pill ── */
+        #gallery-hint {
+            display: none;
+            position: fixed;
+            bottom: 32px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 8888;
+            cursor: pointer;
+            animation: floatPill 2s ease-in-out infinite;
+        }
+        #gallery-hint .pill {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(20, 0, 10, 0.72);
+            border: 1px solid rgba(255,192,203,0.55);
+            border-radius: 50px;
+            padding: 12px 26px 12px 20px;
+            backdrop-filter: blur(10px);
+            box-shadow:
+                0 0 18px rgba(255, 100, 150, 0.35),
+                0 0 48px rgba(255, 100, 150, 0.12),
+                inset 0 0 12px rgba(255,192,203,0.06);
+            white-space: nowrap;
+        }
+        #gallery-hint .pill-icon {
+            font-size: 20px;
+            line-height: 1;
+            animation: wiggle 1.8s ease-in-out infinite;
+        }
+        #gallery-hint .pill-text {
+            font-family: 'Georgia', serif;
+            font-size: 14px;
+            letter-spacing: 3px;
+            color: rgba(255, 210, 220, 0.92);
+            text-transform: uppercase;
+        }
+        #gallery-hint .pill-arrow {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            margin-left: 4px;
+            animation: bounceChevrons 1.2s ease-in-out infinite;
+        }
+        #gallery-hint .pill-arrow span {
+            display: block;
+            width: 10px;
+            height: 6px;
+            border-right: 2px solid rgba(255,192,203,0.85);
+            border-bottom: 2px solid rgba(255,192,203,0.85);
+            transform: rotate(45deg);
+            margin: 0 auto;
+        }
+        #gallery-hint .pill-arrow span:nth-child(2) {
+            opacity: 0.5;
+            margin-top: -3px;
+        }
+
+        /* Glowing ring pulse around the pill */
+        #gallery-hint::after {
+            content: '';
+            position: absolute;
+            inset: -6px;
+            border-radius: 60px;
+            border: 1.5px solid rgba(255,150,180,0.35);
+            animation: ringPulse 2s ease-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes floatPill {
+            0%, 100% { transform: translateX(-50%) translateY(0px); }
+            50%       { transform: translateX(-50%) translateY(-7px); }
+        }
+        @keyframes wiggle {
+            0%, 100% { transform: rotate(0deg); }
+            25%       { transform: rotate(-12deg); }
+            75%       { transform: rotate(12deg); }
+        }
+        @keyframes bounceChevrons {
+            0%, 100% { transform: translateY(0); opacity: 1; }
+            50%       { transform: translateY(4px); opacity: 0.6; }
+        }
+        @keyframes ringPulse {
+            0%   { opacity: 0.8; transform: scale(1); }
+            70%  { opacity: 0;   transform: scale(1.18); }
+            100% { opacity: 0;   transform: scale(1.18); }
+        }
+
+        #gallery-section {
+            display: none;
+            width: 100%;
+            background: #000;
+            padding: 40px 0 60px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Starfield behind gallery */
+        #gallery-section::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image:
+                radial-gradient(circle, rgba(255,255,255,0.18) 1px, transparent 1px),
+                radial-gradient(circle, rgba(255,192,203,0.14) 1px, transparent 1px);
+            background-size: 60px 60px, 110px 110px;
+            background-position: 0 0, 30px 30px;
+            pointer-events: none;
+        }
+
+        #gallery-title {
+            text-align: center;
+            font-family: 'Georgia', serif;
+            font-size: 22px;
+            letter-spacing: 6px;
+            color: rgba(255,192,203,0.9);
+            margin-bottom: 32px;
+            text-transform: uppercase;
+            position: relative;
+        }
+        #gallery-title::after {
+            content: '';
+            display: block;
+            width: 80px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,192,203,0.7), transparent);
+            margin: 10px auto 0;
+        }
+
+        .gallery-track-wrapper {
+            position: relative;
+            width: 820px;
+            margin: 0 auto;
+            overflow: hidden;
+        }
+
+        .gallery-track {
+            display: flex;
+            gap: 20px;
+            transition: transform 0.5s cubic-bezier(0.4,0,0.2,1);
+            will-change: transform;
+        }
+
+        .gallery-card {
+            flex: 0 0 260px;
+            height: 200px;
+            border-radius: 14px;
+            overflow: hidden;
+            position: relative;
+            cursor: pointer;
+            border: 1px solid rgba(255,192,203,0.18);
+            box-shadow: 0 0 24px rgba(255,100,150,0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .gallery-card:hover {
+            transform: scale(1.04) translateY(-4px);
+            box-shadow: 0 8px 40px rgba(255,100,150,0.25);
+        }
+        .gallery-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            filter: brightness(0.88) saturate(1.1);
+            transition: filter 0.3s;
+        }
+        .gallery-card:hover img {
+            filter: brightness(1) saturate(1.3);
+        }
+        .gallery-card .card-caption {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            padding: 28px 14px 12px;
+            background: linear-gradient(0deg, rgba(0,0,0,0.65) 0%, transparent 100%);
+            font-family: 'Georgia', serif;
+            font-size: 12px;
+            letter-spacing: 2px;
+            color: rgba(255,220,230,0.9);
+            text-align: center;
+            text-transform: uppercase;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .gallery-card:hover .card-caption {
+            opacity: 1;
+        }
+
+        /* Nav dots & arrows */
+        .gallery-nav {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            margin-top: 22px;
+        }
+        .g-arrow {
+            background: none;
+            border: 1px solid rgba(255,192,203,0.35);
+            border-radius: 50%;
+            width: 36px; height: 36px;
+            cursor: pointer;
+            color: rgba(255,192,203,0.8);
+            font-size: 16px;
+            display: flex; align-items: center; justify-content: center;
+            transition: background 0.2s, border-color 0.2s;
+        }
+        .g-arrow:hover {
+            background: rgba(255,192,203,0.12);
+            border-color: rgba(255,192,203,0.7);
+        }
+        .g-dots {
+            display: flex; gap: 8px;
+        }
+        .g-dot {
+            width: 7px; height: 7px;
+            border-radius: 50%;
+            background: rgba(255,192,203,0.3);
+            cursor: pointer;
+            transition: background 0.3s, transform 0.3s;
+        }
+        .g-dot.active {
+            background: rgba(255,192,203,0.85);
+            transform: scale(1.35);
+        }
+
+        /* Lightbox */
+        #lightbox {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.88);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        #lightbox.open { display: flex; }
+        #lightbox img {
+            max-width: 80vw;
+            max-height: 75vh;
+            border-radius: 10px;
+            box-shadow: 0 0 60px rgba(255,100,150,0.3);
+            animation: zoomIn 0.3s ease;
+        }
+        @keyframes zoomIn {
+            from { transform: scale(0.85); opacity: 0; }
+            to   { transform: scale(1);    opacity: 1; }
+        }
+        #lightbox .lb-close {
+            position: absolute;
+            top: 22px; right: 30px;
+            font-size: 28px;
+            color: rgba(255,192,203,0.8);
+            cursor: pointer;
+            background: none; border: none;
+            line-height: 1;
+        }
+        #lightbox .lb-caption {
+            margin-top: 16px;
+            font-family: 'Georgia', serif;
+            font-size: 13px;
+            letter-spacing: 3px;
+            color: rgba(255,200,210,0.7);
+            text-transform: uppercase;
+        }
+
+        /* Hearts float decoration */
+        .float-heart {
+            position: absolute;
+            font-size: 14px;
+            opacity: 0;
+            animation: floatUp 4s ease-in forwards;
+            pointer-events: none;
+        }
+        @keyframes floatUp {
+            0%   { opacity: 0.8; transform: translateY(0) scale(1); }
+            100% { opacity: 0;   transform: translateY(-120px) scale(0.5); }
+        }
+    </style>
+</head>
+<body>
+    <div id="main">
+        <div id="error"><a href="http://www.google.cn/chrome/intl/zh-CN/landing_chrome.html?hl=zh-CN&brand=CHMI">Chrome</a> (<a href="http://firefox.com.cn/download/">Firefox</a>)</div>
+        <audio autoplay="autoplay" height="100" width="100" id="myAudio">
+            <source src="aud.mp3" type="audio/mp3" />
+            <embed height="100" width="100" src="aud.mp3" />
+        </audio>
+        <div id="wrap">
+            <div id="text">
+                <div id="code">
+          <span class="say">Hey you 💞</span><br>
+                <span class="say">Yes, you... Sabrina ✨</span><br>
+                <span class="say">Happy 19th Birthday! 🎂</span><br>
+                <span class="say">I just wanted to say... you're truly amazing ❤️</span><br>
+                <span class="say">Actually, I'm a bit jealous you're older now.... </span><br>
+                <span class="say">Keep shining, you deserve the world today 🌟</span><br>
+                <span class="say">Hope your 19th is as beautiful as you are 🌹</span><br>
+                </div>
+                </div>
+            <div id="clock-box">
+                <span id="clock">577 days 0 hours 0 minutes 0 seconds</span>
+            </div>
+            <canvas id="canvas" width="1100" height="680"></canvas>
+        </div>
+    </div>
+
+    <!-- ── Floating pill hint ── -->
+    <div id="gallery-hint" onclick="scrollToGallery()">
+        <div class="pill">
+            <span class="pill-text">𝑴𝒆𝒎𝒐𝒓𝒊𝒆𝒔</span>
+            <div class="pill-arrow">
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Gallery Section ── -->
+    <div id="gallery-section">
+        <div id="gallery-title">✦ 𝑴𝒚 𝑩𝒆𝒂𝒖𝒕𝒊𝒇𝒖𝒍 𝑺𝒂𝒃𝒓𝒊𝒏𝒂 ✦</div>
+
+        <div class="gallery-track-wrapper">
+            <div class="gallery-track" id="galleryTrack">
+                <!-- Cards injected by JS -->
+            </div>
+        </div>
+
+        <div class="gallery-nav">
+            <button class="g-arrow" id="gPrev">&#8592;</button>
+            <div class="g-dots" id="gDots"></div>
+            <button class="g-arrow" id="gNext">&#8594;</button>
+        </div>
+    </div>
+
+    <!-- Lightbox -->
+    <div id="lightbox">
+        <button class="lb-close" onclick="closeLightbox()">&#10005;</button>
+        <img id="lbImg" src="" alt=""/>
+        <div class="lb-caption" id="lbCaption"></div>
+    </div>
+
+    <script>
+    (function() {
+        var canvas = $('#canvas');
+		
+        if (!canvas[0].getContext) {
+            $("#error").show();
+            return false;
+        }
+
+        var width = canvas.width();
+        var height = canvas.height();        
+        canvas.attr("width", width);
+        canvas.attr("height", height);
+
+        var opts = {
+            seed: {
+                x: width / 2 - 20,
+                color: "rgb(190, 26, 37)",
+                scale: 2
+            },
+            branch: [
+                [535, 680, 570, 250, 500, 200, 30, 100, [
+                    [540, 500, 455, 417, 340, 400, 13, 100, [
+                        [450, 435, 434, 430, 394, 395, 2, 40]
+                    ]],
+                    [550, 445, 600, 356, 680, 345, 12, 100, [
+                        [578, 400, 648, 409, 661, 426, 3, 80]
+                    ]],
+                    [539, 281, 537, 248, 534, 217, 3, 40],
+                    [546, 397, 413, 247, 328, 244, 9, 80, [
+                        [427, 286, 383, 253, 371, 205, 2, 40],
+                        [498, 345, 435, 315, 395, 330, 4, 60]
+                    ]],
+                    [546, 357, 608, 252, 678, 221, 6, 100, [
+                        [590, 293, 646, 277, 648, 271, 2, 80]
+                    ]]
+                ]] 
+            ],
+            bloom: {
+                num: 700,
+                width: 1080,
+                height: 650,
+            },
+            footer: {
+                width: 1200,
+                height: 5,
+                speed: 10,
+            }
+        }
+
+        var tree = new Tree(canvas[0], width, height, opts);
+        var seed = tree.seed;
+        var foot = tree.footer;
+        var hold = 1;
+
+        canvas.click(function(e) {
+            playAudio();
+            var offset = canvas.offset(), x, y;
+            x = e.pageX - offset.left;
+            y = e.pageY - offset.top;
+            if (seed.hover(x, y)) {
+                hold = 0; 
+                canvas.unbind("click");
+                canvas.unbind("mousemove");
+                canvas.removeClass('hand');
+            }
+        }).mousemove(function(e) {
+            var offset = canvas.offset(), x, y;
+            x = e.pageX - offset.left;
+            y = e.pageY - offset.top;
+            canvas.toggleClass('hand', seed.hover(x, y));
+        });
+
+        var seedAnimate = eval(Jscex.compile("async", function () {
+            seed.draw();
+            while (hold) {
+                $await(Jscex.Async.sleep(10));
+            }
+            while (seed.canScale()) {
+                seed.scale(0.95);
+                $await(Jscex.Async.sleep(10));
+            }
+            while (seed.canMove()) {
+                seed.move(0, 2);
+                foot.draw();
+                $await(Jscex.Async.sleep(10));
+            }
+        }));
+
+        var growAnimate = eval(Jscex.compile("async", function () {
+            do {
+                tree.grow();
+                $await(Jscex.Async.sleep(10));
+            } while (tree.canGrow());
+        }));
+
+        var flowAnimate = eval(Jscex.compile("async", function () {
+            do {
+                tree.flower(2);
+                $await(Jscex.Async.sleep(10));
+            } while (tree.canFlower());
+        }));
+
+        var moveAnimate = eval(Jscex.compile("async", function () {
+            tree.snapshot("p1", 240, 0, 610, 680);
+            while (tree.move("p1", 500, 0)) {
+                foot.draw();
+                $await(Jscex.Async.sleep(10));
+            }
+            foot.draw();
+            tree.snapshot("p2", 500, 0, 610, 680);
+
+            canvas.parent().css("background", "url(" + tree.toDataURL('image/png') + ")");
+            canvas.css("background", "#ffe");
+            $await(Jscex.Async.sleep(300));
+            canvas.css("background", "none");
+        }));
+
+        var textAnimate = eval(Jscex.compile("async", function () {
+            $("#code").show().typewriter();
+        }));
+
+        /* ── Show gallery hint after the full sequence ── */
+        var showGalleryHint = eval(Jscex.compile("async", function () {
+            $await(Jscex.Async.sleep(3500));
+            $("#gallery-hint").fadeIn(800);
+        }));
+	    
+        var runAsync = eval(Jscex.compile("async", function () {
+            $await(seedAnimate());
+            $await(growAnimate());
+            $await(flowAnimate());
+            $await(moveAnimate());
+            textAnimate().start();
+            showGalleryHint().start();
+        }));
+
+        runAsync().start();
+    })();
+    </script>
+
+    <script>
+    /* ══════════════════════════════════════
+       Gallery Logic
+    ══════════════════════════════════════ */
+    var galleryImages = [
+    { src: "third.jpg", caption: "✦ A beautiful memory ✦" },
+    { src: "sec.jpg", caption: "✦ Cool Sabrina ✦" },
+    { src: "first.jpg", caption: "✦ Young Sabrina ✦" }
+];
+
+    var perPage = 3;
+    var currentPage = 0;
+    var totalPages = Math.ceil(galleryImages.length / perPage);
+
+    function buildGallery() {
+        var track = document.getElementById('galleryTrack');
+        var dots  = document.getElementById('gDots');
+
+        galleryImages.forEach(function(img, i) {
+            var card = document.createElement('div');
+            card.className = 'gallery-card';
+            card.innerHTML =
+                '<img src="' + img.src + '" alt="memory ' + (i+1) + '" />' +
+                '<div class="card-caption">' + img.caption + '</div>';
+            card.addEventListener('click', function() { openLightbox(i); });
+            track.appendChild(card);
+        });
+
+        for (var p = 0; p < totalPages; p++) {
+            (function(page) {
+                var dot = document.createElement('div');
+                dot.className = 'g-dot' + (page === 0 ? ' active' : '');
+                dot.addEventListener('click', function() { goToPage(page); });
+                dots.appendChild(dot);
+            })(p);
+        }
+
+        document.getElementById('gPrev').addEventListener('click', function() {
+            goToPage((currentPage - 1 + totalPages) % totalPages);
+        });
+        document.getElementById('gNext').addEventListener('click', function() {
+            goToPage((currentPage + 1) % totalPages);
+        });
+
+        updateTrack();
+    }
+
+    function goToPage(page) {
+        currentPage = page;
+        updateTrack();
+        document.querySelectorAll('.g-dot').forEach(function(d, i) {
+            d.classList.toggle('active', i === page);
+        });
+    }
+
+    function updateTrack() {
+        var cardW = 260, gap = 20;
+        var offset = currentPage * perPage * (cardW + gap);
+        document.getElementById('galleryTrack').style.transform = 'translateX(-' + offset + 'px)';
+    }
+
+    function openLightbox(index) {
+        var lb = document.getElementById('lightbox');
+        document.getElementById('lbImg').src = galleryImages[index].src;
+        document.getElementById('lbCaption').textContent = galleryImages[index].caption;
+        lb.classList.add('open');
+        spawnHearts(lb);
+    }
+
+    function closeLightbox() {
+        document.getElementById('lightbox').classList.remove('open');
+    }
+
+    document.getElementById('lightbox').addEventListener('click', function(e) {
+        if (e.target === this) closeLightbox();
+    });
+
+    function spawnHearts(container) {
+        var emojis = ['💕','💞','✦','🌸','💖'];
+        for (var i = 0; i < 8; i++) {
+            (function(i) {
+                setTimeout(function() {
+                    var h = document.createElement('span');
+                    h.className = 'float-heart';
+                    h.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                    h.style.left = (10 + Math.random() * 80) + 'vw';
+                    h.style.bottom = '10vh';
+                    h.style.animationDelay = (Math.random() * 0.5) + 's';
+                    container.appendChild(h);
+                    setTimeout(function() { h.remove(); }, 4500);
+                }, i * 200);
+            })(i);
+        }
+    }
+
+    function scrollToGallery() {
+        document.getElementById('gallery-hint').style.display = 'none';
+        document.getElementById('gallery-section').style.display = 'block';
+        document.getElementById('gallery-section').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    buildGallery();
+    </script>
+</body>
+</html>
