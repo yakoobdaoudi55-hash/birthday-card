@@ -3,16 +3,16 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>HBD love</title>	    
-    <link type="text/css" rel="stylesheet" href="default.css">
-    <script type="text/javascript" src="jquery.min.js"></script>
-    <script type="text/javascript" src="jscex.min.js"></script>
-    <script type="text/javascript" src="jscex-parser.js"></script>
-    <script type="text/javascript" src="jscex-jit.js"></script>
-    <script type="text/javascript" src="jscex-builderbase.min.js"></script>
-    <script type="text/javascript" src="jscex-async.min.js"></script>
-    <script type="text/javascript" src="jscex-async-powerpack.min.js"></script>
-    <script type="text/javascript" src="function.js" charset="utf-8"></script>
-    <script type="text/javascript" src="love.js" charset="utf-8"></script>
+    <link type="text/css" rel="stylesheet" href="file/default.css">
+    <script type="text/javascript" src="file/jquery.min.js"></script>
+    <script type="text/javascript" src="file/jscex.min.js"></script>
+    <script type="text/javascript" src="file/jscex-parser.js"></script>
+    <script type="text/javascript" src="file/jscex-jit.js"></script>
+    <script type="text/javascript" src="file/jscex-builderbase.min.js"></script>
+    <script type="text/javascript" src="file/jscex-async.min.js"></script>
+    <script type="text/javascript" src="file/jscex-async-powerpack.min.js"></script>
+    <script type="text/javascript" src="file/function.js" charset="utf-8"></script>
+    <script type="text/javascript" src="file/love.js" charset="utf-8"></script>
     <script>
         function playAudio() {
             var audio = document.getElementById("myAudio");
@@ -20,7 +20,42 @@
         }
     </script>
     <style>
-        /* ── Gallery Hint — fixed floating pill ── */
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 3rem; }
+            .subtitle { font-size: 1.3rem; }
+            .card { padding: 25px; }
+            .memory-grid { grid-template-columns: repeat(3, 1fr); }
+            .timeline::before { left: 30px; }
+            .timeline-item:nth-child(odd),
+            .timeline-item:nth-child(even) {
+                padding-left: 80px;
+                padding-right: 0;
+            }
+            .timeline-emoji { left: 30px; }
+            .timeline-item:nth-child(odd) .timeline-content::after,
+            .timeline-item:nth-child(even) .timeline-content::after {
+                left: -20px;
+                right: auto;
+                border-right: 20px solid var(--cream);
+                border-left: none;
+            }
+            .photo-placeholder { height: 300px; }
+
+            .love-card { padding: 28px 20px !important; margin: 40px 16px 20px !important; }
+            .love-card p  { font-size: 13.5px !important; }
+            .gallery-track-wrapper { width: 100% !important; }
+        }
+
+        /* ── Gallery Hint ── */
         #gallery-hint {
             display: none;
             position: fixed;
@@ -46,11 +81,6 @@
                 inset 0 0 12px rgba(255,192,203,0.06);
             white-space: nowrap;
         }
-        #gallery-hint .pill-icon {
-            font-size: 20px;
-            line-height: 1;
-            animation: wiggle 1.8s ease-in-out infinite;
-        }
         #gallery-hint .pill-text {
             font-family: 'Georgia', serif;
             font-size: 14px;
@@ -74,12 +104,7 @@
             transform: rotate(45deg);
             margin: 0 auto;
         }
-        #gallery-hint .pill-arrow span:nth-child(2) {
-            opacity: 0.5;
-            margin-top: -3px;
-        }
-
-        /* Glowing ring pulse around the pill */
+        #gallery-hint .pill-arrow span:nth-child(2) { opacity: 0.5; margin-top: -3px; }
         #gallery-hint::after {
             content: '';
             position: absolute;
@@ -94,11 +119,6 @@
             0%, 100% { transform: translateX(-50%) translateY(0px); }
             50%       { transform: translateX(-50%) translateY(-7px); }
         }
-        @keyframes wiggle {
-            0%, 100% { transform: rotate(0deg); }
-            25%       { transform: rotate(-12deg); }
-            75%       { transform: rotate(12deg); }
-        }
         @keyframes bounceChevrons {
             0%, 100% { transform: translateY(0); opacity: 1; }
             50%       { transform: translateY(4px); opacity: 0.6; }
@@ -109,16 +129,15 @@
             100% { opacity: 0;   transform: scale(1.18); }
         }
 
+        /* ── Gallery Section ── */
         #gallery-section {
             display: none;
             width: 100%;
             background: #000;
-            padding: 40px 0 60px;
+            padding: 40px 0 80px;
             position: relative;
             overflow: hidden;
         }
-
-        /* Starfield behind gallery */
         #gallery-section::before {
             content: '';
             position: absolute;
@@ -156,14 +175,12 @@
             margin: 0 auto;
             overflow: hidden;
         }
-
         .gallery-track {
             display: flex;
             gap: 20px;
             transition: transform 0.5s cubic-bezier(0.4,0,0.2,1);
             will-change: transform;
         }
-
         .gallery-card {
             flex: 0 0 260px;
             height: 200px;
@@ -187,9 +204,7 @@
             filter: brightness(0.88) saturate(1.1);
             transition: filter 0.3s;
         }
-        .gallery-card:hover img {
-            filter: brightness(1) saturate(1.3);
-        }
+        .gallery-card:hover img { filter: brightness(1) saturate(1.3); }
         .gallery-card .card-caption {
             position: absolute;
             bottom: 0; left: 0; right: 0;
@@ -204,11 +219,8 @@
             opacity: 0;
             transition: opacity 0.3s;
         }
-        .gallery-card:hover .card-caption {
-            opacity: 1;
-        }
+        .gallery-card:hover .card-caption { opacity: 1; }
 
-        /* Nav dots & arrows */
         .gallery-nav {
             display: flex;
             align-items: center;
@@ -231,9 +243,7 @@
             background: rgba(255,192,203,0.12);
             border-color: rgba(255,192,203,0.7);
         }
-        .g-dots {
-            display: flex; gap: 8px;
-        }
+        .g-dots { display: flex; gap: 8px; }
         .g-dot {
             width: 7px; height: 7px;
             border-radius: 50%;
@@ -246,7 +256,68 @@
             transform: scale(1.35);
         }
 
-        /* Lightbox */
+        /* ── Love Letter Card ── */
+        .love-card {
+            max-width: 660px;
+            margin: 64px auto 20px;
+            padding: 44px 52px;
+            background: rgba(12, 0, 6, 0.60);
+            border: 1px solid rgba(255, 192, 203, 0.20);
+            border-radius: 20px;
+            backdrop-filter: blur(14px);
+            text-align: center;
+            font-family: 'Georgia', serif;
+            color: #ffffff;
+            line-height: 1.95;
+            position: relative;
+            z-index: 1;
+        }
+        .love-card-title {
+            font-size: 13px;
+            letter-spacing: 5px;
+            color: rgba(255, 192, 203, 0.70);
+            text-transform: uppercase;
+            margin-bottom: 32px;
+        }
+        .love-card-title span {
+            display: inline-block;
+            width: 40px;
+            height: 1px;
+            background: rgba(255,192,203,0.35);
+            vertical-align: middle;
+            margin: 0 12px;
+        }
+        .love-card p {
+            margin-bottom: 18px;
+            font-size: 14.5px;
+            color: rgba(255, 255, 255, 0.85);
+            font-style: italic;
+        }
+        .love-card .salutation {
+            font-size: 16px;
+            color: #ffffff;
+            font-style: normal;
+            margin-bottom: 24px;
+        }
+        .love-card .signature {
+            margin-top: 32px;
+            font-size: 20px;
+            color: rgba(255, 192, 203, 0.85);
+            letter-spacing: 1px;
+            font-style: italic;
+        }
+        .love-card::before,
+        .love-card::after {
+            content: '';
+            position: absolute;
+            left: 18%; right: 18%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,192,203,0.28), transparent);
+        }
+        .love-card::before { top: 0; }
+        .love-card::after  { bottom: 0; }
+
+        /* ── Lightbox ── */
         #lightbox {
             display: none;
             position: fixed;
@@ -287,7 +358,7 @@
             text-transform: uppercase;
         }
 
-        /* Hearts float decoration */
+        /* Hearts */
         .float-heart {
             position: absolute;
             font-size: 14px;
@@ -311,15 +382,15 @@
         <div id="wrap">
             <div id="text">
                 <div id="code">
-          <span class="say">Hey you 💞</span><br>
-                <span class="say">Yes, you... Sabrina ✨</span><br>
-                <span class="say">Happy 19th Birthday! 🎂</span><br>
-                <span class="say">I just wanted to say... you're truly amazing ❤️</span><br>
-                <span class="say">Actually, I'm a bit jealous you're older now.... </span><br>
-                <span class="say">Keep shining, you deserve the world today 🌟</span><br>
-                <span class="say">Hope your 19th is as beautiful as you are 🌹</span><br>
+                    <span class="say">Hey you 💞</span><br>
+                    <span class="say">Yes, you... Sabrina ✨</span><br>
+                    <span class="say">Happy 19th Birthday! 🎂</span><br>
+                    <span class="say">I just wanted to say... you're truly amazing ❤️</span><br>
+                    <span class="say">Actually, I'm a bit jealous you're older now.... </span><br>
+                    <span class="say">Keep shining, you deserve the world today 🌟</span><br>
+                    <span class="say">Hope your 19th is as beautiful as you are 🌹</span><br>
                 </div>
-                </div>
+            </div>
             <div id="clock-box">
                 <span id="clock">577 days 0 hours 0 minutes 0 seconds</span>
             </div>
@@ -327,7 +398,7 @@
         </div>
     </div>
 
-    <!-- ── Floating pill hint ── -->
+    <!-- Floating pill hint -->
     <div id="gallery-hint" onclick="scrollToGallery()">
         <div class="pill">
             <span class="pill-text">𝑴𝒆𝒎𝒐𝒓𝒊𝒆𝒔</span>
@@ -338,20 +409,40 @@
         </div>
     </div>
 
-    <!-- ── Gallery Section ── -->
+    <!-- Gallery Section -->
     <div id="gallery-section">
         <div id="gallery-title">✦ 𝑴𝒚 𝑩𝒆𝒂𝒖𝒕𝒊𝒇𝒖𝒍 𝑺𝒂𝒃𝒓𝒊𝒏𝒂 ✦</div>
 
         <div class="gallery-track-wrapper">
-            <div class="gallery-track" id="galleryTrack">
-                <!-- Cards injected by JS -->
-            </div>
+            <div class="gallery-track" id="galleryTrack"></div>
         </div>
 
         <div class="gallery-nav">
             <button class="g-arrow" id="gPrev">&#8592;</button>
             <div class="g-dots" id="gDots"></div>
             <button class="g-arrow" id="gNext">&#8594;</button>
+        </div>
+
+        <!-- Love Letter Card — داخل gallery-section للتناسق -->
+        <div class="love-card">
+            <div class="love-card-title">
+                <span></span> Final Words to My Dearest Love <span></span>
+            </div>
+
+            <p class="salutation">Hey Sabrina,</p>
+
+            <p>So you're 19 now. Honestly, I don't have a big speech prepared —
+               I just wanted to do something a little i wish u like it </p>
+
+            <p>You're someone who makes things feel lighter just by being around.
+               That's not something everyone has,i like evrything in u ur topics ur laugh ur energy and when u always talk freely  .</p>
+
+            <p>Thank you for being my partner, my friend, my biggest supporter, and the love of my life. I can't wait to create a million more memories with you.
+               You deserve that.</p>
+
+            <p>Happy birthday.</p>
+
+            <div class="signature"> yours✨ </div>
         </div>
     </div>
 
@@ -365,12 +456,10 @@
     <script>
     (function() {
         var canvas = $('#canvas');
-		
         if (!canvas[0].getContext) {
             $("#error").show();
             return false;
         }
-
         var width = canvas.width();
         var height = canvas.height();        
         canvas.attr("width", width);
@@ -400,17 +489,9 @@
                     ]]
                 ]] 
             ],
-            bloom: {
-                num: 700,
-                width: 1080,
-                height: 650,
-            },
-            footer: {
-                width: 1200,
-                height: 5,
-                speed: 10,
-            }
-        }
+            bloom: { num: 700, width: 1080, height: 650 },
+            footer: { width: 1200, height: 5, speed: 10 }
+        };
 
         var tree = new Tree(canvas[0], width, height, opts);
         var seed = tree.seed;
@@ -437,43 +518,24 @@
 
         var seedAnimate = eval(Jscex.compile("async", function () {
             seed.draw();
-            while (hold) {
-                $await(Jscex.Async.sleep(10));
-            }
-            while (seed.canScale()) {
-                seed.scale(0.95);
-                $await(Jscex.Async.sleep(10));
-            }
-            while (seed.canMove()) {
-                seed.move(0, 2);
-                foot.draw();
-                $await(Jscex.Async.sleep(10));
-            }
+            while (hold) { $await(Jscex.Async.sleep(10)); }
+            while (seed.canScale()) { seed.scale(0.95); $await(Jscex.Async.sleep(10)); }
+            while (seed.canMove()) { seed.move(0, 2); foot.draw(); $await(Jscex.Async.sleep(10)); }
         }));
 
         var growAnimate = eval(Jscex.compile("async", function () {
-            do {
-                tree.grow();
-                $await(Jscex.Async.sleep(10));
-            } while (tree.canGrow());
+            do { tree.grow(); $await(Jscex.Async.sleep(10)); } while (tree.canGrow());
         }));
 
         var flowAnimate = eval(Jscex.compile("async", function () {
-            do {
-                tree.flower(2);
-                $await(Jscex.Async.sleep(10));
-            } while (tree.canFlower());
+            do { tree.flower(2); $await(Jscex.Async.sleep(10)); } while (tree.canFlower());
         }));
 
         var moveAnimate = eval(Jscex.compile("async", function () {
             tree.snapshot("p1", 240, 0, 610, 680);
-            while (tree.move("p1", 500, 0)) {
-                foot.draw();
-                $await(Jscex.Async.sleep(10));
-            }
+            while (tree.move("p1", 500, 0)) { foot.draw(); $await(Jscex.Async.sleep(10)); }
             foot.draw();
             tree.snapshot("p2", 500, 0, 610, 680);
-
             canvas.parent().css("background", "url(" + tree.toDataURL('image/png') + ")");
             canvas.css("background", "#ffe");
             $await(Jscex.Async.sleep(300));
@@ -484,12 +546,11 @@
             $("#code").show().typewriter();
         }));
 
-        /* ── Show gallery hint after the full sequence ── */
         var showGalleryHint = eval(Jscex.compile("async", function () {
             $await(Jscex.Async.sleep(3500));
             $("#gallery-hint").fadeIn(800);
         }));
-	    
+
         var runAsync = eval(Jscex.compile("async", function () {
             $await(seedAnimate());
             $await(growAnimate());
@@ -504,18 +565,15 @@
     </script>
 
     <script>
-    /* ══════════════════════════════════════
-       Gallery Logic
-    ══════════════════════════════════════ */
     var galleryImages = [
-    { src: "third.jpg", caption: "✦ A beautiful memory ✦" },
-    { src: "sec.jpg", caption: "✦ Cool Sabrina ✦" },
-    { src: "first.jpg", caption: "✦ Young Sabrina ✦" }
-];
+        { src: "third.jpg",  caption: "✦ A beautiful memory ✦" },
+        { src: "sec.jpg",    caption: "✦ Cool Sabrina ✦" },
+        { src: "first.jpg",  caption: "✦ Young Sabrina ✦" }
+    ];
 
-    var perPage = 3;
+    var perPage    = 3;
     var currentPage = 0;
-    var totalPages = Math.ceil(galleryImages.length / perPage);
+    var totalPages  = Math.ceil(galleryImages.length / perPage);
 
     function buildGallery() {
         var track = document.getElementById('galleryTrack');
